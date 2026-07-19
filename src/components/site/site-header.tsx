@@ -1,142 +1,263 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, ShoppingBag, User2, Leaf } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useCartStore } from "@/store/cart-store";
+import { useState } from "react";
+import {
+  ShoppingBag,
+  Menu,
+  X,
+  Leaf,
+  User
+} from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const NAV_LINKS = [
   { href: "/", label: "خانه" },
   { href: "/menu", label: "منوی کافه" },
   { href: "/shop", label: "فروشگاه" },
-  { href: "/blog", label: "بلاگ" },
-  { href: "/about", label: "درباره ما" },
-  { href: "/contact", label: "تماس با ما" },
+  { href: "/#about", label: "داستان ما" },
+  { href: "/#contact", label: "رزرو میز" },
 ];
 
-export function SiteHeader({ userName }: { userName?: string | null }) {
+export default function Header() {
+  const { totalCount } = useCart();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
-  const count = useCartStore((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
-  const bump = useCartStore((s) => s.lastAddedAt);
-  const [pop, setPop] = useState(false);
-
-  useEffect(() => {
-    if (bump) {
-      setPop(true);
-      const t = setTimeout(() => setPop(false), 350);
-      return () => clearTimeout(t);
-    }
-  }, [bump]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 border-b transition-colors",
-        scrolled ? "border-forest/10 bg-cream/90 backdrop-blur-md" : "border-transparent bg-cream/70 backdrop-blur-sm",
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="focus-ring flex items-center gap-2 rounded-lg">
-          <span className="flex size-9 items-center justify-center rounded-full bg-forest text-sage">
-            <Leaf className="size-4" />
-          </span>
-          <span className="font-serif text-xl font-bold text-forest">کافه ماچا</span>
+<header
+  className="
+    fixed
+    top-4
+    left-50
+    right-50
+    z-[999]
+    overflow-hidden
+    rounded-[3rem]
+    border
+    border-green-900/10
+    bg-[#f8f5ed]/80
+    backdrop-blur-xl
+    shadow-xl
+    isolate
+  "
+>
+
+      <div
+        className="
+          mx-auto
+          flex
+          max-w-7xl
+          items-center
+          justify-between
+          px-6
+          py-3
+        "
+      >
+
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-3"
+        >
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-[#355e3b]
+              text-white
+              shadow-lg
+            "
+          >
+            <Leaf size={22}/>
+          </div>
+
+          <div className="leading-tight">
+            <h1
+              className="
+                font-serif
+                text-xl
+                font-bold
+                text-[#203c27]
+              "
+            >
+              کافه ماچا
+            </h1>
+
+            <p
+              className="
+                text-[11px]
+                text-[#355e3b]/70
+              "
+            >
+              Cafe & Matcha Store
+            </p>
+          </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "focus-ring relative rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
-                  active ? "text-amber-dark" : "text-forest/70 hover:text-forest",
-                )}
-              >
-                {link.label}
-                {active && <span className="absolute inset-x-3 -bottom-[1px] h-0.5 rounded-full bg-amber" />}
-              </Link>
-            );
-          })}
+
+        {/* Desktop Menu */}
+        <nav
+          className="
+            hidden
+            items-center
+            gap-8
+            md:flex
+          "
+        >
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="
+                text-sm
+                font-medium
+                text-[#203c27]/80
+                transition
+                hover:text-[#d97706]
+              "
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
+
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+
+          {/* Login */}
           <Link
-            href={userName ? "/account" : "/login"}
-            className="focus-ring hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-forest/80 transition-colors hover:bg-forest/5 sm:flex"
+            href="/login"
+            className="
+              hidden
+              h-11
+              items-center
+              gap-2
+              rounded-full
+              bg-[#d97706]
+              px-3.5
+              text-sm
+              font-medium
+              text-white
+              transition
+              hover:bg-[#b45309]
+              hover:scale-105
+              md:flex
+            "
           >
-            <User2 className="size-[18px]" />
-            {userName ? userName.split(" ")[0] : "ورود"}
+            <User size={18}/>
+
           </Link>
+
+
+          {/* Cart */}
           <Link
             href="/cart"
-            aria-label="سبد خرید"
-            className="focus-ring relative flex size-11 items-center justify-center rounded-xl text-forest transition-colors hover:bg-forest/5"
+            className="
+              relative
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-[#d97706]
+              text-white
+              shadow-md
+              transition
+              hover:bg-[#b45309]
+              hover:scale-105
+            "
           >
-            <ShoppingBag className="size-5" />
-            {count > 0 && (
+            <ShoppingBag size={21}/>
+
+            {totalCount > 0 && (
               <span
-                className={cn(
-                  "absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-full bg-amber text-[11px] font-bold text-white",
-                  pop && "animate-pop",
-                )}
+                className="
+                  absolute
+                  -top-1
+                  -left-1
+                  flex
+                  h-5
+                  min-w-5
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#3b2415]
+                  px-1
+                  text-xs
+                  text-white
+                "
               >
-                {count > 9 ? "9+" : count}
+                {totalCount}
               </span>
             )}
           </Link>
+
+
+          {/* Mobile Button */}
           <button
-            aria-label={open ? "بستن منو" : "باز کردن منو"}
-            onClick={() => setOpen((v) => !v)}
-            className="focus-ring flex size-11 items-center justify-center rounded-xl text-forest transition-colors hover:bg-forest/5 lg:hidden"
+            onClick={() => setOpen(!open)}
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-white
+              text-[#d97706]
+              md:hidden
+            "
           >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            {open ? <X/> : <Menu/>}
           </button>
+
         </div>
+
       </div>
 
+
+      {/* Mobile Menu */}
       {open && (
-        <div className="animate-fade-in-up border-t border-forest/10 bg-cream px-4 pb-6 pt-2 lg:hidden">
-          <nav className="flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "focus-ring flex h-12 items-center rounded-xl px-3 text-sm font-medium transition-colors",
-                  pathname === link.href ? "bg-forest text-cream" : "text-forest/80 hover:bg-forest/5",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <nav
+          className="
+            flex
+            flex-col
+            gap-2
+            border-t
+            border-green-900/10
+            bg-[#f8f5ed]
+            rounded-b-[3rem]
+            px-5
+            py-4
+            md:hidden
+          "
+        >
+          {NAV_LINKS.map((link) => (
             <Link
-              href={userName ? "/account" : "/login"}
-              className="focus-ring flex h-12 items-center gap-2 rounded-xl px-3 text-sm font-medium text-forest/80 hover:bg-forest/5"
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="
+                rounded-xl
+                px-4
+                py-3
+                text-[#203c27]
+                transition
+                hover:bg-orange-100
+              "
             >
-              <User2 className="size-[18px]" />
-              {userName ? `حساب کاربری (${userName.split(" ")[0]})` : "ورود / ثبت‌نام"}
+              {link.label}
             </Link>
-          </nav>
-        </div>
+          ))}
+        </nav>
       )}
+
     </header>
   );
 }
