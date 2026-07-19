@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #10251a;
+  --color-forest-light: #1a3327;
+  --color-forest-dark: #0a1811;
+  --color-amber: #d9823b;
+  --color-amber-light: #e6a06a;
+  --color-amber-dark: #b8672a;
+  --color-sage: #a8c686;
+  --color-sage-light: #c1d9a8;
+  --color-sage-dark: #8aab68;
+  --color-cream: #faf7f2;
+  --color-cream-dark: #f1eade;
+  --font-sans: var(--font-vazirmatn), "Vazirmatn", system-ui, sans-serif;
+  --font-serif: var(--font-playfair), "Playfair Display", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-forest);
+  font-family: var(--font-sans);
+}
+
+* {
+  border-color: rgb(16 37 26 / 0.08);
+}
+
+::selection {
+  background-color: var(--color-amber);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-sage);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-amber);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, #ece5da 25%, #f4efe7 37%, #ece5da 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease both;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-pop {
+  animation: pop 0.35s ease;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease both;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.prose-fa {
+  line-height: 2;
+}
+.prose-fa h2 {
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-forest);
+}
+.prose-fa h3 {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-fa p {
+  margin-bottom: 1rem;
+  color: #33413a;
+}
+.prose-fa ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose-fa a {
+  color: var(--color-amber-dark);
+  text-decoration: underline;
+}
