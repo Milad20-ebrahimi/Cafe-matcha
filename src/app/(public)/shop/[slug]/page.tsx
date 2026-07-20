@@ -2,16 +2,22 @@ import { notFound } from "next/navigation";
 import { Container, SectionHeading } from "@/components/ui/container";
 import { ProductDetail } from "@/components/site/product-detail";
 import { ProductCard } from "@/components/site/product-card";
-import { findBySlug , findRelated  } from "@/repositories/product.repository";
+import {
+  getShopProductBySlug,
+  getRelatedProducts,
+} from "@/services/product.service";
 
 export const dynamic = "force-dynamic";
 
 export default async function ShopProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await findBySlug (slug);
-  if (!product || product.type !== "shop") notFound();
+const product = await getShopProductBySlug(slug);
 
-  const related = await findRelated (product.categoryId, product.id, "shop");
+  const related = await getRelatedProducts(
+  product.categoryId,
+  product.id,
+  "shop"
+);
 
   return (
     <div className="py-12 pb-24">

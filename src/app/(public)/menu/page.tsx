@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Container, SectionHeading } from "@/components/ui/container";
 import { ProductCard } from "@/components/site/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { findAll as findProducts } from "@/repositories/product.repository";
+import { getProducts } from "@/services/product.service";
 import { findAll as findCategories } from "@/repositories/category.repository";
 import { getSiteSettings } from "@/lib/settings";
 import { Coffee } from "lucide-react";
@@ -14,11 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default async function MenuPage() {
-  const [categories, allProducts] = await Promise.all([
-    findCategories("menu"),
-    findProducts ({ type: "menu" }),
-  ]);
-
+const [categories, allProducts] = await Promise.all([
+  findCategories("menu"),
+  getProducts({ type: "menu" }),
+]);
   return (
     <div className="pb-24">
       <section className="bg-forest py-16 text-cream">
