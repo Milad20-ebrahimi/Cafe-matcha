@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Container, SectionHeading } from "@/components/ui/container";
 import { ProductCard } from "@/components/site/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getCategories, getProducts } from "@/lib/queries";
+import { findAll as findProducts } from "@/repositories/product.repository";
+import { findAll as findCategories } from "@/repositories/category.repository";
+import { getSiteSettings } from "@/lib/settings";
 import { Coffee } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +15,8 @@ export const metadata: Metadata = {
 
 export default async function MenuPage() {
   const [categories, allProducts] = await Promise.all([
-    getCategories("menu"),
-    getProducts({ type: "menu" }),
+    findCategories("menu"),
+    findProducts ({ type: "menu" }),
   ]);
 
   return (

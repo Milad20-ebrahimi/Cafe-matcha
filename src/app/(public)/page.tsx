@@ -5,17 +5,18 @@ import { Container, SectionHeading } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { CategoryCard } from "@/components/site/category-card";
 import { ProductCard } from "@/components/site/product-card";
-import { getCategories, getProducts } from "@/lib/queries";
+import { findAll as findProducts } from "@/repositories/product.repository";
+import { findAll as findCategories } from "@/repositories/category.repository";
 import { getSiteSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [menuCategories, settings, featuredMenu, featuredShop] = await Promise.all([
-    getCategories("menu"),
+    findCategories("menu"),
     getSiteSettings(),
-    getProducts({ type: "menu", featured: true }),
-    getProducts({ type: "shop", featured: true }),
+    findProducts ({ type: "menu", featured: true }),
+    findProducts ({ type: "shop", featured: true }),
   ]);
 
   const banner = settings.banners[0];

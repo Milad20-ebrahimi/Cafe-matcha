@@ -1,7 +1,8 @@
 import { db } from "@/db";
 import { products, categories } from "@/db/schema";
-import { and, eq, desc, sql } from "drizzle-orm";
-import type { ProductDTO, CategoryDTO, ProductVariant } from "@/types";
+import { and, desc, eq } from "drizzle-orm";
+
+import type { ProductDTO, ProductVariant } from "@/types";
 
 function toProductDTO(row: typeof products.$inferSelect, categoryName?: string | null, categorySlug?: string | null): ProductDTO {
   return {
@@ -28,28 +29,7 @@ function toProductDTO(row: typeof products.$inferSelect, categoryName?: string |
   };
 }
 
-export function toCategoryDTO(row: typeof categories.$inferSelect): CategoryDTO {
-  return {
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    type: row.type,
-    description: row.description ?? "",
-    imageUrl: row.imageUrl,
-    sortOrder: row.sortOrder,
-  };
-}
-
-export async function getCategories(type?: "menu" | "shop") {
-  const rows = await db
-    .select()
-    .from(categories)
-    .where(type ? eq(categories.type, type) : undefined)
-    .orderBy(categories.sortOrder);
-  return rows.map(toCategoryDTO);
-}
-
-export async function getProducts(opts: {
+export async function findAll(opts: {
   type?: "menu" | "shop";
   categorySlug?: string;
   featured?: boolean;
@@ -60,11 +40,10 @@ export async function getProducts(opts: {
   if (opts.featured) conditions.push(eq(products.isFeatured, true));
   if (opts.onlyActive !== false) conditions.push(eq(products.isActive, true));
 
-  let categoryId: string | undefined;
+
   if (opts.categorySlug) {
     const [cat] = await db.select().from(categories).where(eq(categories.slug, opts.categorySlug));
     if (!cat) return [];
-    categoryId = cat.id;
     conditions.push(eq(products.categoryId, cat.id));
   }
 
@@ -77,8 +56,7 @@ export async function getProducts(opts: {
 
   return rows.map((r) => toProductDTO(r.product, r.category?.name, r.category?.slug));
 }
-
-export async function getProductBySlug(slug: string) {
+export async function findBySlug(slug: string) {
   const [row] = await db
     .select({ product: products, category: categories })
     .from(products)
@@ -87,19 +65,16 @@ export async function getProductBySlug(slug: string) {
   if (!row) return null;
   return toProductDTO(row.product, row.category?.name, row.category?.slug);
 }
-
-export async function getRelatedProducts(categoryId: string | null, excludeId: string, type: "menu" | "shop") {
+export async function findRelated(categoryId: string | null, excludeId: string, type: "menu" | "shop") {
   if (!categoryId) return [];
   const rows = await db
     .select({ product: products, category: categories })
     .from(products)
     .leftJoin(categories, eq(products.categoryId, categories.id))
-    .where(and(eq(products.categoryId, categoryId), eq(products.isActive, true)))
+    .where(and(eq(products.categoryId, categoryId),eq(products.type, type), eq(products.isActive, true)))
     .limit(5);
   return rows
     .filter((r) => r.product.id !== excludeId)
     .slice(0, 4)
     .map((r) => toProductDTO(r.product, r.category?.name, r.category?.slug));
 }
-
-export const sqlLower = sql;
