@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { CategoryCard } from "@/components/site/category-card";
 import { ProductCard } from "@/components/site/product-card";
 import {getFeaturedProducts,} from "@/services/product.service";
-import { findAll as findCategories } from "@/repositories/category.repository";
+import { getMenuCategories } from "@/services/category.service";
 import { getSiteSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
 const [menuCategories, settings, featuredMenu, featuredShop] = await Promise.all([
-  findCategories("menu"),
+  getMenuCategories(),
   getSiteSettings(),
   getFeaturedProducts("menu"),
   getFeaturedProducts("shop"),

@@ -6,8 +6,7 @@ import { ShopFilters } from "@/components/site/shop-filters";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { getProducts } from "@/services/product.service";
-import { findAll as findCategories } from "@/repositories/category.repository";
-import { getSiteSettings } from "@/lib/settings";
+import { getShopCategories  } from "@/services/category.service";
 import { SearchX } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -76,7 +75,7 @@ export default async function ShopPage({
   searchParams: Promise<{ category?: string; q?: string; sort?: string }>;
 }) {
   const params = await searchParams;
-  const categories = await findCategories("shop");
+  const categories = await getShopCategories();
 
   return (
     <div className="pb-24">
