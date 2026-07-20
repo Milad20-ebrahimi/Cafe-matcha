@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/site/product-card";
 import { ShopFilters } from "@/components/site/shop-filters";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
-import { findAll as findProducts } from "@/repositories/product.repository";
+import { getProducts } from "@/services/product.service";
 import { findAll as findCategories } from "@/repositories/category.repository";
 import { getSiteSettings } from "@/lib/settings";
 import { SearchX } from "lucide-react";
@@ -25,7 +25,10 @@ async function ShopResults({
   q?: string;
   sort?: string;
 }) {
-  let items = await findProducts ({ type: "shop", categorySlug: category });
+ let items = await getProducts({
+  type: "shop",
+  categorySlug: category,
+});
 
   if (q) {
     const query = q.trim().toLowerCase();
