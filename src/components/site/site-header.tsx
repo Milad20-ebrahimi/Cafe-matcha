@@ -9,7 +9,6 @@ import {
   Leaf,
   User
 } from "lucide-react";
-import { useCart } from "@/context/CartContext";
 
 const NAV_LINKS = [
   { href: "/", label: "خانه" },
@@ -20,7 +19,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
-  const { totalCount } = useCart();
+  const  totalCount  = 0;
   const [open, setOpen] = useState(false);
 
   return (
