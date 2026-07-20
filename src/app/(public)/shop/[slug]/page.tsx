@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { Container, SectionHeading } from "@/components/ui/container";
 import { ProductDetail } from "@/components/site/product-detail";
 import { ProductCard } from "@/components/site/product-card";

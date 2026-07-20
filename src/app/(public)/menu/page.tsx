@@ -3,7 +3,7 @@ import { Container, SectionHeading } from "@/components/ui/container";
 import { ProductCard } from "@/components/site/product-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getProducts } from "@/services/product.service";
-import { findAll as findCategories } from "@/repositories/category.repository";
+import { getMenuCategories } from "@/services/category.service";
 import { getSiteSettings } from "@/lib/settings";
 import { Coffee } from "lucide-react";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function MenuPage() {
 const [categories, allProducts] = await Promise.all([
-  findCategories("menu"),
+  getMenuCategories(),
   getProducts({ type: "menu" }),
 ]);
   return (
