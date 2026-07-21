@@ -11,9 +11,11 @@ import {
 
 import {
   findItem,
+  findById,
+  findByCartId,
   create as createCartItem,
   updateQuantity,
-  findByCartId,
+  remove,
 } from "@/repositories/cart-item.repository";
 
 import {
@@ -23,7 +25,11 @@ import {
 
 import type { CartOwner } from "@/types/cart";
 
-export async function getOrCreateCart(owner: CartOwner) {
+
+// گرفتن یا ساخت Cart
+export async function getOrCreateCart(
+  owner: CartOwner
+) {
 
   if (owner.type === "user") {
 
@@ -32,8 +38,7 @@ export async function getOrCreateCart(owner: CartOwner) {
 
     if (existing) return existing;
 
-
-   return createUserCart(owner.userId);
+    return createUserCart(owner.userId);
   }
 
 
@@ -46,6 +51,10 @@ export async function getOrCreateCart(owner: CartOwner) {
 
   return createGuestCart(owner.guestId);
 }
+
+
+
+// اضافه کردن محصول به Cart
 export async function addToCart(params: {
   owner: CartOwner;
   productId: string;
@@ -59,12 +68,19 @@ export async function addToCart(params: {
   } = params;
 
 
-  // 1. گرفتن یا ساخت Cart
-  const cart = await getOrCreateCart(owner);
+  if (quantity < 1) {
+    throw new Error("Invalid quantity");
+  }
 
 
-  // 2. پیدا کردن محصول
-  const product = await findProductById(productId);
+  const cart =
+    await getOrCreateCart(owner);
+
+
+
+  const product =
+    await findProductById(productId);
+
 
 
   if (!product) {
@@ -72,7 +88,7 @@ export async function addToCart(params: {
   }
 
 
-  // 3. فقط محصولات فروشگاه اجازه ورود به سبد دارند
+
   if (product.type !== "shop") {
     throw new Error(
       "Only shop products can be added to cart"
@@ -80,7 +96,7 @@ export async function addToCart(params: {
   }
 
 
-  // 4. بررسی فعال بودن محصول
+
   if (!product.isActive) {
     throw new Error(
       "Product is not available"
@@ -88,14 +104,15 @@ export async function addToCart(params: {
   }
 
 
-  // 5. بررسی وجود محصول در Cart
-  const existingItem = await findItem(
-    cart.id,
-    productId
-  );
+
+  const existingItem =
+    await findItem(
+      cart.id,
+      productId
+    );
 
 
-  // 6. اگر وجود داشت quantity افزایش بده
+
   if (existingItem) {
 
     return updateQuantity(
@@ -106,7 +123,7 @@ export async function addToCart(params: {
   }
 
 
-  // 7. اگر نبود آیتم جدید بساز
+
   return createCartItem({
     cartId: cart.id,
     productId,
@@ -114,26 +131,105 @@ export async function addToCart(params: {
   });
 
 }
-export async function getCart(owner: CartOwner) {
-
-  const cart = await getOrCreateCart(owner);
 
 
-  const rows = await findByCartId(cart.id);
 
 
-  const items = rows
-    .filter((row) => row.product)
-    .map((row) =>
-      toCartItemDTO(
-        row.item,
-        row.product!
-      )
-    );
+// گرفتن Cart کامل
+export async function getCart(
+  owner: CartOwner
+) {
+
+  const cart =
+    await getOrCreateCart(owner);
+
+
+
+  const rows =
+    await findByCartId(cart.id);
+
+
+
+  const items =
+    rows
+      .filter((row) => row.product)
+      .map((row) =>
+        toCartItemDTO(
+          row.item,
+          row.product!
+        )
+      );
+
 
 
   return toCartDTO(
     cart,
     items
   );
+
+}
+
+
+
+
+// تغییر تعداد محصول
+export async function updateCartItemQuantity(
+  itemId: string,
+  quantity: number
+) {
+
+
+  if (quantity < 1) {
+    throw new Error(
+      "Quantity must be at least 1"
+    );
+  }
+
+
+
+  const item =
+    await findById(itemId);
+
+
+
+  if (!item) {
+    throw new Error(
+      "Cart item not found"
+    );
+  }
+
+
+
+  return updateQuantity(
+    item.id,
+    quantity
+  );
+
+}
+
+
+
+
+
+// حذف محصول از Cart
+export async function removeFromCart(
+  itemId: string
+) {
+
+
+  const item =
+    await findById(itemId);
+
+
+
+  if (!item) {
+    throw new Error(
+      "Cart item not found"
+    );
+  }
+
+
+
+  return remove(item.id);
+
 }
