@@ -228,14 +228,97 @@ export const siteSettings = pgTable("site_settings", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+// ---------- carts ----------
+export const carts = pgTable("carts", {
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
 
+  userId: uuid("user_id")
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+
+  guestId: varchar("guest_id", {
+    length: 255,
+  }),
+
+  createdAt: timestamp("created_at")
+    .notNull()
+    .defaultNow(),
+
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow(),
+});
+// ---------- cartItems ----------
+export const cartItems = pgTable("cart_items", {
+
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
+
+  cartId: uuid("cart_id")
+    .notNull()
+    .references(() => carts.id, {
+      onDelete:"cascade"
+    }),
+
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => products.id, {
+      onDelete:"cascade"
+    }),
+
+  quantity: integer("quantity")
+    .notNull()
+    .default(1),
+
+  createdAt: timestamp("created_at")
+    .notNull()
+    .defaultNow(),
+
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow(),
+
+});
 // ---------- RELATIONS ----------
 export const usersRelations = relations(users, ({ one, many }) => ({
-  role: one(roles, { fields: [users.roleId], references: [roles.id] }),
-  addresses: many(addresses),
-  orders: many(orders),
-}));
+  role: one(roles, {
+    fields: [users.roleId],
+    references: [roles.id],
+  }),
 
+  addresses: many(addresses),
+
+  orders: many(orders),
+
+  carts: many(carts),
+}));
+export const cartsRelations = relations(carts, ({ one, many }) => ({
+
+  user: one(users, {
+    fields: [carts.userId],
+    references: [users.id],
+  }),
+
+  items: many(cartItems),
+
+}));
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+
+  cart: one(carts, {
+    fields: [cartItems.cartId],
+    references: [carts.id],
+  }),
+
+  product: one(products, {
+    fields: [cartItems.productId],
+    references: [products.id],
+  }),
+
+}));
 export const rolesRelations = relations(roles, ({ many }) => ({
   users: many(users),
 }));
@@ -250,6 +333,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     references: [categories.id],
   }),
   orderItems: many(orderItems),
+  cartItems: many(cartItems),
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
