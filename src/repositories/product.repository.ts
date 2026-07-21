@@ -56,3 +56,26 @@ export async function findRelated(categoryId: string | null, excludeId: string, 
     .slice(0, 4)
     .map((r) => toProductDTO(r.product, r.category?.name, r.category?.slug));
 }
+export async function findById(id: string) {
+  const [row] = await db
+    .select({
+      product: products,
+      category: categories,
+    })
+    .from(products)
+    .leftJoin(
+      categories,
+      eq(products.categoryId, categories.id)
+    )
+    .where(eq(products.id, id));
+
+
+  if (!row) return null;
+
+
+  return toProductDTO(
+    row.product,
+    row.category?.name,
+    row.category?.slug
+  );
+}
