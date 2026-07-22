@@ -80,3 +80,12 @@ export async function remove(id: string) {
 
   return item ?? null;
 }
+// پیدا کردن آیتم با id
+export async function findById(id: string) {
+  const [item] = await db
+    .select()
+    .from(cartItems)
+    .where(eq(cartItems.id, id));
+
+  return item ?? null;
+}
