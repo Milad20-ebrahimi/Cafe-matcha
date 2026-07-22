@@ -51,6 +51,31 @@ export type CartItem = {
   quantity: number;
   stock: number;
 };
+export type CartItemDTO = {
+  id: string;
+  productId: string;
+  quantity: number;
+
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    image: string | null;
+  };
+};
+
+
+export type CartDTO = {
+  id: string;
+  userId: string | null;
+  guestId: string | null;
+
+  items: CartItemDTO[];
+
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type OrderStatus =
   | "pending_payment"
