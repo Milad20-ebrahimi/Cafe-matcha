@@ -1,8 +1,7 @@
 "use client";
 
-console.log("PRODUCT DETAIL RENDER");
-
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -45,7 +44,7 @@ export function ProductDetail({
   const [justAdded, setJustAdded] =
     useState(false);
 
-
+const router = useRouter();
 
   const activeVariant =
     product.variants.find(
@@ -124,19 +123,12 @@ export function ProductDetail({
           quantity: qty,
         });
 
-
-
-      console.log(
-        "DATABASE CART RESULT:",
-        result
-      );
-
+      router.refresh();
 
 
       toast.success(
         `«${product.name}» به سبد خرید اضافه شد.`
       );
-
 
 
       setJustAdded(true);
