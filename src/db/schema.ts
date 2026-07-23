@@ -1,5 +1,6 @@
 import {
   pgTable,
+  unique,
   uuid,
   text,
   varchar,
@@ -261,13 +262,13 @@ export const cartItems = pgTable("cart_items", {
   cartId: uuid("cart_id")
     .notNull()
     .references(() => carts.id, {
-      onDelete:"cascade"
+      onDelete: "cascade",
     }),
 
   productId: uuid("product_id")
     .notNull()
     .references(() => products.id, {
-      onDelete:"cascade"
+      onDelete: "cascade",
     }),
 
   quantity: integer("quantity")
@@ -282,7 +283,15 @@ export const cartItems = pgTable("cart_items", {
     .notNull()
     .defaultNow(),
 
-});
+}, (table) => ({
+
+  uniqueCartProduct: unique()
+    .on(
+      table.cartId,
+      table.productId
+    ),
+
+}));
 // ---------- RELATIONS ----------
 export const usersRelations = relations(users, ({ one, many }) => ({
   role: one(roles, {
