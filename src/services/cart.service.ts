@@ -60,7 +60,8 @@ export async function addToCart(params: {
   productId: string;
   quantity: number;
 }) {
-
+console.log("=== ADD TO CART ===");
+console.log(params);
   const {
     owner,
     productId,
@@ -122,13 +123,17 @@ export async function addToCart(params: {
 
   }
 
+ console.log("Creating cart item...");
 
+const item = await createCartItem({
+  cartId: cart.id,
+  productId,
+  quantity,
+});
 
-  return createCartItem({
-    cartId: cart.id,
-    productId,
-    quantity,
-  });
+console.log("Created item:", item);
+
+return item;
 
 }
 
